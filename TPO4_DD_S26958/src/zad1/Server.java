@@ -49,21 +49,26 @@ public class Server {
                 }
 
                 if(key.isReadable()){
-                    processMessage(key);
+                    SocketChannel sc = (SocketChannel) key.channel();
+                    processMessage(sc);
                 }
 
             }
         }
 
     }
-    private static void processMessage(SelectionKey key) throws IOException {
-        SocketChannel socketChannel = (SocketChannel) key.channel();
+    private static void processMessage(SocketChannel socketChannel) throws IOException {
+        if (!socketChannel.isOpen()) {
+            subscribers.remove(socketChannel);
+            return;
+        }
+
         ByteBuffer buffer = ByteBuffer.allocate(BSIZE);
         int bytesRead = socketChannel.read(buffer);
 
         if (bytesRead == -1) {
             socketChannel.close();
-            key.cancel();
+            socketChannel.socket().close();
             return;
         }
 
@@ -122,6 +127,11 @@ public class Server {
             case "remove":
                 if(topics.contains(topic)){
                     topics.remove(topic);
+                    for (Map.Entry<SocketChannel, ArrayList<String>> entry : subscribers.entrySet()) {
+                        ArrayList<String> tmp = entry.getValue();
+                        if(tmp.contains(topic))
+                            tmp.remove(topic);
+                    }
                     socketChannel.write(charset.encode("Usuniento: " + topic));
                 }
                 else{
