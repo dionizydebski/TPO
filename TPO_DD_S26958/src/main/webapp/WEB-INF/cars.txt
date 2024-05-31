@@ -1,0 +1,5 @@
+osobowy,Toyota,2010,7.5
+ciezarowy,Mercedes,2015,12.0
+F1,Ferrari,2020,30.0
+dostawczy,Ford,2018,10.0
+osobowy,Honda,2012,6.8
