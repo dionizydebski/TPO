@@ -14,13 +14,8 @@ public class QueryServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String carType = request.getParameter("carType");
-        List<Car> cars = (List<Car>) getServletContext().getAttribute("cars");
+        request.setAttribute("carType", carType);
 
-        List<Car> filteredCars = cars.stream()
-                .filter(car -> car.getType().equalsIgnoreCase(carType))
-                .collect(Collectors.toList());
-
-        request.setAttribute("filteredCars", filteredCars);
-        request.getRequestDispatcher("/displayCars").forward(request, response);
+        request.getRequestDispatcher("/loadData").forward(request, response);
     }
 }
